@@ -80,7 +80,6 @@ enum L {
 
     // Share
     static func shareText(score: Int, stress: Int, fatigue: Int, stability: Int) -> String {
-        String(localized: "share_text \(score) \(stress) \(fatigue) \(stability)",
-               defaultValue: "ボイスバイタル結果: 総合\(score)点 | ストレス\(stress) | 疲労\(fatigue) | 安定\(stability) #ボイスバイタル")
+        "\(String(localized: "app_title", defaultValue: "ボイスバイタル")) \(String(localized: "overall_score", defaultValue: "総合スコア")): \(score) | \(String(localized: "stress", defaultValue: "ストレス"))\(stress) | \(String(localized: "fatigue", defaultValue: "疲労"))\(fatigue) | \(String(localized: "stability", defaultValue: "安定度"))\(stability) #VoiceVital"
     }
 }
