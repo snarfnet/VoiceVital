@@ -27,9 +27,11 @@ jobs:
         run: xcodegen generate
 
       - name: Set up ASC API Key
+        env:
+          ASC_API_KEY_CONTENT: ${{ secrets.ASC_API_KEY_CONTENT }}
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
-          printf '%s\n' "${{ secrets.ASC_API_KEY_CONTENT }}" > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
+          echo "$ASC_API_KEY_CONTENT" | base64 -D > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
       - name: Clean up old certificates
         continue-on-error: true
