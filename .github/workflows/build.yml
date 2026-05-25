@@ -25,9 +25,10 @@ jobs:
       - name: Set up ASC API Key
         run: |
           mkdir -p ~/private_keys
-          echo "${{ secrets.ASC_API_KEY_CONTENT }}" > ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8
+          printf '%s\n' "${{ secrets.ASC_API_KEY_CONTENT }}" > ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8
 
       - name: Clean up old certificates
+        continue-on-error: true
         run: |
           pip3 install "pyjwt[crypto]" requests --break-system-packages
           python3 - <<'PYEOF'
