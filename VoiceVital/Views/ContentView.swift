@@ -8,19 +8,19 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             RecordingView(analyzer: analyzer)
                 .tabItem {
-                    Label("測定", systemImage: "waveform.circle.fill")
+                    Label(L.tabMeasure, systemImage: "waveform.circle.fill")
                 }
                 .tag(0)
 
             HistoryView()
                 .tabItem {
-                    Label("記録", systemImage: "chart.xyaxis.line")
+                    Label(L.tabHistory, systemImage: "chart.xyaxis.line")
                 }
                 .tag(1)
 
             InfoView()
                 .tabItem {
-                    Label("解説", systemImage: "book.closed.fill")
+                    Label(L.tabInfo, systemImage: "book.closed.fill")
                 }
                 .tag(2)
         }

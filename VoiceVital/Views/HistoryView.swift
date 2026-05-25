@@ -18,7 +18,7 @@ struct HistoryView: View {
                 .padding(.vertical)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("記録")
+            .navigationTitle(L.tabHistory)
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -29,10 +29,10 @@ struct HistoryView: View {
             Image(systemName: "chart.xyaxis.line")
                 .font(.system(size: 60))
                 .foregroundStyle(.tertiary)
-            Text("まだ記録がありません")
+            Text(L.noRecords)
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("「測定」タブで声を録音すると\nここにトレンドが表示されます")
+            Text(L.noRecordsHint)
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -41,7 +41,7 @@ struct HistoryView: View {
 
     private var trendChart: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("トレンド")
+            Text(L.trend)
                 .font(.headline)
 
             let trends = store.trends(days: 14)
@@ -50,22 +50,22 @@ struct HistoryView: View {
                 Chart {
                     ForEach(trends) { t in
                         LineMark(
-                            x: .value("日", t.date, unit: .day),
-                            y: .value("スコア", t.overallScore)
+                            x: .value("Date", t.date, unit: .day),
+                            y: .value("Score", t.overallScore)
                         )
                         .foregroundStyle(.cyan)
                         .symbol(Circle())
 
                         LineMark(
-                            x: .value("日", t.date, unit: .day),
-                            y: .value("ストレス", t.stressScore)
+                            x: .value("Date", t.date, unit: .day),
+                            y: .value("Stress", t.stressScore)
                         )
                         .foregroundStyle(.red.opacity(0.6))
                         .lineStyle(StrokeStyle(dash: [5, 3]))
 
                         LineMark(
-                            x: .value("日", t.date, unit: .day),
-                            y: .value("疲労", t.fatigueScore)
+                            x: .value("Date", t.date, unit: .day),
+                            y: .value("Fatigue", t.fatigueScore)
                         )
                         .foregroundStyle(.orange.opacity(0.6))
                         .lineStyle(StrokeStyle(dash: [5, 3]))
@@ -78,13 +78,13 @@ struct HistoryView: View {
                 .frame(height: 200)
 
                 HStack(spacing: 16) {
-                    legendDot("総合", color: .cyan)
-                    legendDot("ストレス", color: .red.opacity(0.6))
-                    legendDot("疲労", color: .orange.opacity(0.6))
+                    legendDot(L.overall, color: .cyan)
+                    legendDot(L.stress, color: .red.opacity(0.6))
+                    legendDot(L.fatigue, color: .orange.opacity(0.6))
                 }
                 .font(.caption2)
             } else {
-                Text("2日以上のデータが集まるとグラフが表示されます")
+                Text(L.trendHint)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(height: 100)
@@ -98,7 +98,7 @@ struct HistoryView: View {
 
     private var recentRecords: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("最近の記録")
+            Text(L.recentRecords)
                 .font(.headline)
                 .padding(.horizontal)
 
@@ -115,7 +115,7 @@ struct HistoryView: View {
                     HStack(spacing: 12) {
                         miniScore("S", value: r.stressScore, color: r.stressScore > 60 ? .red : .green)
                         miniScore("F", value: r.fatigueScore, color: r.fatigueScore > 60 ? .red : .green)
-                        miniScore("安", value: r.stabilityScore, color: r.stabilityScore < 40 ? .red : .green)
+                        miniScore("St", value: r.stabilityScore, color: r.stabilityScore < 40 ? .red : .green)
                     }
                     Text("\(r.overallScore)")
                         .font(.title3.bold().monospacedDigit())

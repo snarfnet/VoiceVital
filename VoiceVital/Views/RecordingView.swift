@@ -21,7 +21,7 @@ struct RecordingView: View {
                     }
                 }
             }
-            .navigationTitle("ボイスバイタル")
+            .navigationTitle(L.appTitle)
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -43,9 +43,9 @@ struct RecordingView: View {
             }
 
             VStack(spacing: 8) {
-                Text("声で体調をチェック")
+                Text(L.checkWithVoice)
                     .font(.title2.bold())
-                Text("「あー」と5秒間発声してください")
+                Text(L.sayAh5sec)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -53,7 +53,7 @@ struct RecordingView: View {
             Button {
                 analyzer.startRecording()
             } label: {
-                Text("測定開始")
+                Text(L.startMeasure)
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -63,8 +63,8 @@ struct RecordingView: View {
             .padding(.horizontal, 48)
 
             VStack(spacing: 4) {
-                Text("静かな場所で測定してください")
-                Text("マイクから20cm程度離して発声")
+                Text(L.quietPlace)
+                Text(L.micDistance)
             }
             .font(.caption)
             .foregroundStyle(.tertiary)
@@ -78,7 +78,6 @@ struct RecordingView: View {
             Spacer()
 
             ZStack {
-                // パルスアニメーション
                 ForEach(0..<3, id: \.self) { i in
                     Circle()
                         .stroke(.cyan.opacity(0.3), lineWidth: 2)
@@ -98,13 +97,12 @@ struct RecordingView: View {
                         .font(.system(size: 48, weight: .light, design: .rounded))
                         .foregroundStyle(.white)
                         .monospacedDigit()
-                    Text("/ 5.0 秒")
+                    Text("/ 5.0 \(L.seconds)")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.7))
                 }
             }
 
-            // レベルメーター
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
@@ -118,11 +116,10 @@ struct RecordingView: View {
             .frame(height: 8)
             .padding(.horizontal, 40)
 
-            Text("「あー」と声を出し続けてください")
+            Text(L.keepSaying)
                 .font(.headline)
                 .foregroundStyle(.cyan)
 
-            // プログレスバー
             ProgressView(value: analyzer.elapsedTime / 5.0)
                 .tint(.cyan)
                 .padding(.horizontal, 40)
@@ -136,10 +133,10 @@ struct RecordingView: View {
             ProgressView()
                 .scaleEffect(1.5)
                 .tint(.cyan)
-            Text("音声を解析中...")
+            Text(L.analyzing)
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("F0 / ジッター / シマー / HNR / CPP / α比")
+            Text(L.analysisParams)
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }

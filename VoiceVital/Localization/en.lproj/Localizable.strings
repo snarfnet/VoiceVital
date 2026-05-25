@@ -1,0 +1,79 @@
+// Tabs
+"tab_measure" = "Measure";
+"tab_history" = "History";
+"tab_info" = "About";
+
+// Recording
+"app_title" = "VoiceVital";
+"check_with_voice" = "Check Your Health with Voice";
+"say_ah_5sec" = "Say \"ahhh\" for 5 seconds";
+"start_measure" = "Start";
+"quiet_place" = "Measure in a quiet place";
+"mic_distance" = "Hold device ~20cm from mouth";
+"keep_saying" = "Keep saying \"ahhh\"";
+"analyzing" = "Analyzing voice...";
+"analysis_params" = "F0 / Jitter / Shimmer / HNR / CPP / α Ratio";
+"seconds" = "sec";
+
+// Result
+"overall_score" = "Overall Score";
+"stress" = "Stress";
+"fatigue" = "Fatigue";
+"stability" = "Stability";
+"acoustic_params" = "Acoustic Parameters";
+"normal_value" = "Normal";
+"condition" = "Condition";
+"share" = "Share";
+"retry" = "Retry";
+"disclaimer" = "This app is not a medical device. Results are for reference only. Consult a healthcare professional if you have health concerns.";
+
+// Param names
+"param_f0" = "Fundamental Frequency (F0)";
+"param_jitter" = "Jitter";
+"param_shimmer" = "Shimmer";
+"param_hnr" = "HNR (Harmonics-to-Noise Ratio)";
+"param_cpp" = "CPP (Cepstral Peak Prominence)";
+"param_alpha" = "Alpha Ratio";
+"param_rms" = "Sound Pressure";
+
+// Overall labels
+"excellent" = "Excellent";
+"good" = "Good";
+"caution" = "Slight Caution";
+"warning" = "Caution";
+"rest_needed" = "Rest Needed";
+
+// Advice
+"advice_stress" = "Signs of stress detected. Elevated F0 and alpha ratio suggest increased subglottal pressure. Try deep breathing or stretching to activate your parasympathetic nervous system.";
+"advice_fatigue" = "Signs of vocal fatigue detected. Elevated shimmer and decreased HNR indicate incomplete vocal fold closure. Stay hydrated and rest your voice.";
+"advice_stability" = "Voice stability is low. Elevated jitter indicates irregular vocal fold vibration. Get enough sleep.";
+"advice_good" = "Your voice is in good condition. All parameters are within normal range. Keep it up.";
+
+// History
+"no_records" = "No Records Yet";
+"no_records_hint" = "Record your voice in the Measure tab\nto see trends here";
+"trend" = "Trend";
+"trend_hint" = "Charts appear after 2+ days of data";
+"recent_records" = "Recent Records";
+"overall" = "Overall";
+
+// Info
+"about_title" = "About This App";
+"about_desc1" = "VoiceVital analyzes a 5-second sustained vowel to visualize stress and fatigue trends from acoustic properties of your voice.";
+"about_desc2" = "It measures 6 acoustic parameters based on peer-reviewed research in speech pathology and psychoacoustics.";
+"measured_params" = "Measured Parameters";
+"interpretation" = "Interpretation";
+"interp_desc1" = "Normal values are derived from large-scale studies of healthy adults. Individual baselines vary by sex, age, and smoking history.";
+"interp_desc2" = "For best results, measure at the same time and under the same conditions daily, and track changes from your personal baseline.";
+"medical_disclaimer" = "This app is not a medical device. It is not intended for diagnosis or treatment. Results are for reference only.";
+
+// Param descriptions
+"desc_f0" = "The fundamental pitch of vocal fold vibration. Under stress, sympathetic activation increases laryngeal muscle tension, raising F0.";
+"desc_jitter" = "Cycle-to-cycle variation in vocal fold vibration period. Reflects fine neuromuscular control. Increases with fatigue, sleep deprivation, and aging. Normal: < 1.04%.";
+"desc_shimmer" = "Cycle-to-cycle amplitude variation. Reflects vocal fold mass asymmetry and mucosal wave irregularity. Early indicator of vocal fatigue. Normal: < 3.81%.";
+"desc_hnr" = "Ratio of periodic to aperiodic energy in voice. Quantitative index of breathy dysphonia from incomplete glottal closure. Normal: > 20 dB.";
+"desc_cpp" = "Objective voice quality measure via cepstral analysis. The single strongest acoustic correlate of dysphonia severity.";
+"desc_alpha" = "High/low spectral energy ratio at 1 kHz boundary. Under psychological stress, increased subglottal pressure raises high-frequency energy.";
+
+// Share
+"share_text %lld %lld %lld %lld" = "VoiceVital Result: Overall %1$lld | Stress %2$lld | Fatigue %3$lld | Stability %4$lld #VoiceVital";
