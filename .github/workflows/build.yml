@@ -5,6 +5,10 @@ on:
     branches: [master]
   workflow_dispatch:
 
+env:
+  KEY_ID: WDXGY9WX55
+  ISSUER_ID: 2be0734f-943a-4d61-9dc9-5d9045c46fec
+
 jobs:
   build:
     runs-on: macos-15
@@ -24,18 +28,19 @@ jobs:
 
       - name: Set up ASC API Key
         run: |
-          mkdir -p ~/private_keys
-          printf '%s\n' "${{ secrets.ASC_API_KEY_CONTENT }}" > ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8
+          mkdir -p ~/.appstoreconnect/private_keys
+          printf '%s\n' "${{ secrets.ASC_API_KEY_CONTENT }}" > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
       - name: Clean up old certificates
         continue-on-error: true
         run: |
           pip3 install "pyjwt[crypto]" requests --break-system-packages
           python3 - <<'PYEOF'
-          import jwt, time, requests
-          KEY_ID = "${{ secrets.ASC_API_KEY_ID }}"
-          ISSUER = "${{ secrets.ASC_ISSUER_ID }}"
-          with open(f"/Users/runner/private_keys/AuthKey_{KEY_ID}.p8") as f: key = f.read()
+          import jwt, time, requests, os
+          KEY_ID = os.environ["KEY_ID"]
+          ISSUER = os.environ["ISSUER_ID"]
+          key_path = os.path.expanduser(f"~/.appstoreconnect/private_keys/AuthKey_{KEY_ID}.p8")
+          with open(key_path) as f: key = f.read()
           token = jwt.encode({"iss": ISSUER, "iat": int(time.time()), "exp": int(time.time())+600, "aud": "appstoreconnect-v1"}, key, algorithm="ES256", headers={"kid": KEY_ID})
           h = {"Authorization": f"Bearer {token}"}
           r = requests.get("https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DEVELOPMENT&limit=200", headers=h)
@@ -47,8 +52,6 @@ jobs:
                   dr = requests.delete(f"https://api.appstoreconnect.apple.com/v1/certificates/{c['id']}", headers=h)
                   print(f"  Delete {c['id']}: {dr.status_code}")
           PYEOF
-        env:
-          HOME: /Users/runner
 
       - name: Resolve packages
         run: |
@@ -64,9 +67,9 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath build/VoiceVital.xcarchive \
             -allowProvisioningUpdates \
-            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }} \
-            -authenticationKeyID ${{ secrets.ASC_API_KEY_ID }} \
-            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8 \
+            -authenticationKeyIssuerID $ISSUER_ID \
+            -authenticationKeyID $KEY_ID \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 \
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=83VGKGSQUH
 
@@ -77,14 +80,14 @@ jobs:
             -exportPath build/export \
             -exportOptionsPlist export_options.plist \
             -allowProvisioningUpdates \
-            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }} \
-            -authenticationKeyID ${{ secrets.ASC_API_KEY_ID }} \
-            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8
+            -authenticationKeyIssuerID $ISSUER_ID \
+            -authenticationKeyID $KEY_ID \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
       - name: Upload to App Store Connect
         run: |
           xcrun altool --upload-app \
             -f build/export/VoiceVital.ipa \
             -t ios \
-            --apiKey ${{ secrets.ASC_API_KEY_ID }} \
-            --apiIssuer ${{ secrets.ASC_ISSUER_ID }}
+            --apiKey $KEY_ID \
+            --apiIssuer $ISSUER_ID
