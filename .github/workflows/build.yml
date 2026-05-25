@@ -1,0 +1,89 @@
+name: Build & Upload
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Set up ASC API Key
+        run: |
+          mkdir -p ~/private_keys
+          echo "${{ secrets.ASC_API_KEY_CONTENT }}" > ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8
+
+      - name: Clean up old certificates
+        run: |
+          pip3 install "pyjwt[crypto]" requests --break-system-packages
+          python3 - <<'PYEOF'
+          import jwt, time, requests
+          KEY_ID = "${{ secrets.ASC_API_KEY_ID }}"
+          ISSUER = "${{ secrets.ASC_ISSUER_ID }}"
+          with open(f"../private_keys/AuthKey_{KEY_ID}.p8") as f: key = f.read()
+          token = jwt.encode({"iss": ISSUER, "iat": int(time.time()), "exp": int(time.time())+600, "aud": "appstoreconnect-v1"}, key, algorithm="ES256", headers={"kid": KEY_ID})
+          h = {"Authorization": f"Bearer {token}"}
+          r = requests.get("https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DEVELOPMENT&limit=200", headers=h)
+          certs = r.json().get("data", [])
+          print(f"Found {len(certs)} DEVELOPMENT certs")
+          if len(certs) >= 8:
+              certs.sort(key=lambda c: c["attributes"].get("expirationDate",""))
+              for c in certs[:len(certs)-2]:
+                  dr = requests.delete(f"https://api.appstoreconnect.apple.com/v1/certificates/{c['id']}", headers=h)
+                  print(f"  Delete {c['id']}: {dr.status_code}")
+          PYEOF
+        env:
+          HOME: /Users/runner
+
+      - name: Resolve packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project VoiceVital.xcodeproj \
+            -scheme VoiceVital
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project VoiceVital.xcodeproj \
+            -scheme VoiceVital \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/VoiceVital.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }} \
+            -authenticationKeyID ${{ secrets.ASC_API_KEY_ID }} \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8 \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=83VGKGSQUH
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/VoiceVital.xcarchive \
+            -exportPath build/export \
+            -exportOptionsPlist export_options.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }} \
+            -authenticationKeyID ${{ secrets.ASC_API_KEY_ID }} \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8
+
+      - name: Upload to App Store Connect
+        run: |
+          xcrun altool --upload-app \
+            -f build/export/VoiceVital.ipa \
+            -t ios \
+            --apiKey ${{ secrets.ASC_API_KEY_ID }} \
+            --apiIssuer ${{ secrets.ASC_ISSUER_ID }}
